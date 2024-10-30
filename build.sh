@@ -32,7 +32,7 @@ else
 fi
 
 # Compile the Go code and output it to the release directory
-go build -o release/apimain cmd/apimain.go
+go build -o release/rustdesk-api-server cmd/apimain.go
 
 # Copy resource files to the release directory
 cp -ar resources release/
