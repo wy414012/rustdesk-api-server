@@ -42,7 +42,7 @@ func main() {
 	}
 
 	if *version {
-		fmt.Println("1.3.2")
+		fmt.Println("1.3.3")
 		os.Exit(0)
 	}
 
