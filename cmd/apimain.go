@@ -1,6 +1,10 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"os"
+
 	"Gwen/config"
 	"Gwen/global"
 	"Gwen/http"
@@ -11,7 +15,6 @@ import (
 	"Gwen/lib/upload"
 	"Gwen/model"
 	"Gwen/service"
-	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
@@ -27,10 +30,26 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	//配置解析
+	// 命令行参数解析
+	help := flag.Bool("h", false, "显示帮助信息")
+	version := flag.Bool("v", false, "显示版本信息")
+	flag.Parse()
+
+	if *help {
+		fmt.Println("帮助信息:")
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
+
+	if *version {
+		fmt.Println("1.3.2")
+		os.Exit(0)
+	}
+
+	// 配置解析
 	global.Viper = config.Init(&global.Config)
 
-	//日志
+	// 日志
 	global.Logger = logger.New(&logger.Config{
 		Path:         global.Config.Logger.Path,
 		Level:        global.Config.Logger.Level,
@@ -39,14 +58,14 @@ func main() {
 
 	global.InitI18n()
 
-	//redis
+	// redis
 	global.Redis = redis.NewClient(&redis.Options{
 		Addr:     global.Config.Redis.Addr,
 		Password: global.Config.Redis.Password,
 		DB:       global.Config.Redis.Db,
 	})
 
-	//cache
+	// cache
 	if global.Config.Cache.Type == cache.TypeFile {
 		fc := cache.NewFileCache()
 		fc.SetDir(global.Config.Cache.FileDir)
@@ -58,7 +77,7 @@ func main() {
 			DB:       global.Config.Cache.RedisDb,
 		})
 	}
-	//gorm
+	// gorm
 	if global.Config.Gorm.Type == config.TypeMysql {
 		dns := global.Config.Mysql.Username + ":" + global.Config.Mysql.Password + "@(" + global.Config.Mysql.Addr + ")/" + global.Config.Mysql.Dbname + "?charset=utf8mb4&parseTime=True&loc=Local"
 		global.DB = orm.NewMysql(&orm.MysqlConfig{
@@ -67,7 +86,7 @@ func main() {
 			MaxOpenConns: global.Config.Gorm.MaxOpenConns,
 		})
 	} else {
-		//sqlite
+		// sqlite
 		global.DB = orm.NewSqlite(&orm.SqliteConfig{
 			MaxIdleConns: global.Config.Gorm.MaxIdleConns,
 			MaxOpenConns: global.Config.Gorm.MaxOpenConns,
@@ -75,10 +94,10 @@ func main() {
 	}
 	DatabaseAutoUpdate()
 
-	//validator
+	// validator
 	global.ApiInitValidator()
 
-	//oss
+	// oss
 	global.Oss = &upload.Oss{
 		AccessKeyId:     global.Config.Oss.AccessKeyId,
 		AccessKeySecret: global.Config.Oss.AccessKeySecret,
@@ -88,16 +107,15 @@ func main() {
 		MaxByte:         global.Config.Oss.MaxByte,
 	}
 
-	//jwt
-	//fmt.Println(global.Config.Jwt.PrivateKey)
-	//global.Jwt = jwt.NewJwt(global.Config.Jwt.PrivateKey, global.Config.Jwt.ExpireDuration*time.Second)
+	// jwt
+	// fmt.Println(global.Config.Jwt.PrivateKey)
+	// global.Jwt = jwt.NewJwt(global.Config.Jwt.PrivateKey, global.Config.Jwt.ExpireDuration*time.Second)
 
-	//locker
+	// locker
 	global.Lock = lock.NewLocal()
 
-	//gin
+	// gin
 	http.ApiInit()
-
 }
 
 func DatabaseAutoUpdate() {
@@ -106,14 +124,14 @@ func DatabaseAutoUpdate() {
 	db := global.DB
 
 	if global.Config.Gorm.Type == config.TypeMysql {
-		//检查存不存在数据库，不存在则创建
+		// 检查存不存在数据库，不存在则创建
 		dbName := db.Migrator().CurrentDatabase()
 		fmt.Println("dbName", dbName)
 		if dbName == "" {
 			dbName = global.Config.Mysql.Dbname
 			// 移除 DSN 中的数据库名称，以便初始连接时不指定数据库
 			dsnWithoutDB := global.Config.Mysql.Username + ":" + global.Config.Mysql.Password + "@(" + global.Config.Mysql.Addr + ")/?charset=utf8mb4&parseTime=True&loc=Local"
-			//新链接
+			// 新链接
 			dbWithoutDB := orm.NewMysql(&orm.MysqlConfig{
 				Dns: dsnWithoutDB,
 			})
@@ -140,15 +158,15 @@ func DatabaseAutoUpdate() {
 	if !db.Migrator().HasTable(&model.Version{}) {
 		Migrate(uint(version))
 	} else {
-		//查找最后一个version
+		// 查找最后一个version
 		var v model.Version
 		db.Last(&v)
 		if v.Version < uint(version) {
 			Migrate(uint(version))
 		}
 	}
-
 }
+
 func Migrate(version uint) {
 	fmt.Println("migrating....", version)
 	err := global.DB.AutoMigrate(
@@ -172,7 +190,7 @@ func Migrate(version uint) {
 		fmt.Println("migrate err :=>", err)
 	}
 	global.DB.Create(&model.Version{Version: version})
-	//如果是初次则创建一个默认用户
+	// 如果是初次则创建一个默认用户
 	var vc int64
 	global.DB.Model(&model.Version{}).Count(&vc)
 	if vc == 1 {
@@ -194,7 +212,7 @@ func Migrate(version uint) {
 			Type: model.GroupTypeShare,
 		}
 		service.AllService.GroupService.Create(groupShare)
-		//是true
+		// 是true
 		is_admin := true
 		admin := &model.User{
 			Username: "admin",
@@ -206,5 +224,4 @@ func Migrate(version uint) {
 		admin.Password = service.AllService.UserService.EncryptPassword("admin")
 		global.DB.Create(admin)
 	}
-
 }
