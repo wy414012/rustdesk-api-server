@@ -29,12 +29,12 @@ jobs:
           repository: wy414012/rustdesk-api-web
           path: rustdesk-api-web
       - name: Set up Go environment
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: '1.22'  # 选择 Go 版本
 
       - name: Set up npm
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
