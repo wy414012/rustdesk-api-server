@@ -33,6 +33,8 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "apimain",
 	Short: "RUSTDESK API SERVER",
+	Long:  "这是一个用于RUSTDESK管理系统的API服务器。",
+	Version: "1.3.3",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		InitGlobal()
 	},
@@ -58,6 +60,7 @@ var resetPwdCmd = &cobra.Command{
 		fmt.Printf("reset password success! \n")
 	},
 }
+
 var resetUserPwdCmd = &cobra.Command{
 	Use:     "reset-pwd [userId] [pwd]",
 	Example: "reset-pwd 2 123456",
@@ -88,7 +91,10 @@ var resetUserPwdCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&global.ConfigPath, "config", "c", "./conf/config.yaml", "choose config file")
 	rootCmd.AddCommand(resetPwdCmd, resetUserPwdCmd)
+	rootCmd.Flags().BoolP("help", "h", false, "显示帮助信息")
+	rootCmd.Flags().BoolP("version", "v", false, "显示版本信息")
 }
+
 func main() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -168,6 +174,7 @@ func InitGlobal() {
 	//locker
 	global.Lock = lock.NewLocal()
 }
+
 func DatabaseAutoUpdate() {
 	version := 246
 
@@ -235,6 +242,7 @@ func DatabaseAutoUpdate() {
 	}
 
 }
+
 func Migrate(version uint) {
 	fmt.Println("migrating....", version)
 	err := global.DB.AutoMigrate(
