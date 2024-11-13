@@ -2,6 +2,10 @@ lang: "zh-CN"
 app:
   web-client: 1  # 1:启用 0:禁用
   register: false #是否开启注册
+admin:
+  title: "RustDesk Api Admin"
+  hello-file: "./conf/admin/hello.html"  #优先使用file
+  hello: ""
 gin:
   api-addr: "0.0.0.0:21114"
   mode: "release" #release,debug,test
