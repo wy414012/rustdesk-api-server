@@ -81,3 +81,33 @@ func (ct *UserToken) Delete(c *gin.Context) {
 	}
 	response.Fail(c, 101, response.TranslateMsg(c, "ItemNotFound"))
 }
+
+// BatchDelete 批量删除
+// @Tags 登录凭证
+// @Summary 登录凭证批量删除
+// @Description 登录凭证批量删除
+// @Accept  json
+// @Produce  json
+// @Param body body admin.UserTokenBatchDeleteForm true "登录凭证信息"
+// @Success 200 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /admin/user_token/delete [post]
+// @Security token
+func (ct *UserToken) BatchDelete(c *gin.Context) {
+	f := &admin.UserTokenBatchDeleteForm{}
+	if err := c.ShouldBindJSON(f); err != nil {
+		response.Fail(c, 101, response.TranslateMsg(c, "ParamsError")+err.Error())
+		return
+	}
+	ids := f.Ids
+	if len(ids) == 0 {
+		response.Fail(c, 101, response.TranslateMsg(c, "ParamsError"))
+		return
+	}
+	err := service.AllService.UserService.BatchDeleteUserToken(ids)
+	if err == nil {
+		response.Success(c, nil)
+		return
+	}
+	response.Fail(c, 101, err.Error())
+}
