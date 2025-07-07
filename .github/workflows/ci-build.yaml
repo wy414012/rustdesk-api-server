@@ -1,0 +1,16 @@
+name: CI Build
+
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  run-ci-build:
+    uses: ./.github/workflows/build.yaml
+    secrets: inherit
+    with:
+      upload-artifact: false
+      upload-tag: "ci"
