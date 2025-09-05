@@ -12,6 +12,13 @@ desktop software that provides self-hosted solutions.
 <img src="https://github.com/lejianwen/rustdesk-api/actions/workflows/build.yml/badge.svg"/>
 </div>
 
+## Better used with [lejianwen/rustdesk-server].
+> [lejianwen/rustdesk-server] is a fork of the official RustDesk Server repository.
+> 1. Solves the API connection timeout issue.
+> 2. Can enforce login before initiating a connection.
+> 3. Supports client websocket.
+
+
 # Features
 
 - PC API
@@ -181,6 +188,7 @@ The table below does not list all configurations. Please refer to the configurat
 | RUSTDESK_API_MYSQL_PASSWORD                            | MySQL password                                                                                                                                      | 111111                        |
 | RUSTDESK_API_MYSQL_ADDR                                | MySQL address                                                                                                                                       | 192.168.1.66:3306             |
 | RUSTDESK_API_MYSQL_DBNAME                              | MySQL database name                                                                                                                                 | rustdesk                      |
+| RUSTDESK_API_MYSQL_TLS                             | Whether to enable TLS, optional values: `true`, `false`, `skip-verify`, `custom` | `false`                       |
 | ----- RUSTDESK Configuration -----                     | ---------------------------------------                                                                                                             | ----------------------------- |
 | RUSTDESK_API_RUSTDESK_ID_SERVER                        | Rustdesk ID server address                                                                                                                          | 192.168.1.66:21116            |
 | RUSTDESK_API_RUSTDESK_RELAY_SERVER                     | Rustdesk relay server address                                                                                                                       | 192.168.1.66:21117            |
@@ -325,3 +333,6 @@ Thanks to everyone who contributed!
 </a>
 
 ## Thanks for your support! If you find this project useful, please give it a ⭐️. Thank you!
+
+
+[lejianwen/rustdesk-server]: https://github.com/lejianwen/rustdesk-server

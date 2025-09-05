@@ -85,6 +85,7 @@ mysql:
 
   # MySQL数据库名称
   dbname: ""
+  tls: "false" # true / false / skip-verify / custom
 
 # PostgreSQL数据库配置
 postgresql:
