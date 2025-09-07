@@ -188,32 +188,14 @@ ldap:
 
   # LDAP用户属性映射配置
   user:
-    # 用户搜索基础路径
     base-dn: "ou=users,dc=example,dc=com"
-
-    # 用户启用状态属性名 (在AD中为"userAccountControl")
-    enable-attr: "" #The attribute name of the user for enabling, in AD it is "userAccountControl", empty means no enable attribute, all users are enabled
-
-    # 启用状态的有效值 (在AD中可忽略)
+    enable-attr: ""       #The attribute name of the user for enabling, in AD it is "userAccountControl", empty means no enable attribute, all users are enabled
     enable-attr-value: "" # The value of the enable attribute when the user is enabled. If you are using AD, just set random value, it will be ignored.
-
-    # 用户搜索过滤器
     filter: "(cn=*)"
-
-    # 用户名字段映射 (在AD中应为"sAMAccountName")
-    username: "uid" # The attribute name of the user for usernamem if you are using AD, it should be "sAMAccountName"
-
-    # 邮箱字段映射
+    username: "uid"       # The attribute name of the user for usernamem if you are using AD, it should be "sAMAccountName"
     email: "mail"
-
-    # 名字字段映射
     first-name: "givenName"
-
-    # 姓氏字段映射
     last-name: "sn"
-
-    # 用户同步策略 (true=登录时同步, false=创建时同步)
-    sync: false # If true, the user will be synchronized to the database when the user logs in. If false, the user will be synchronized to the database when the user be created.
-
-    # 管理员组DN (属于此组的用户将被设为管理员)
+    sync: false         # If true, the user will be synchronized to the database when the user logs in. If false, the user will be synchronized to the database when the user be created.
     admin-group: "cn=admin,dc=example,dc=com" # The group name of the admin group, if the user is in this group, the user will be an admin.
+    allow-group: "cn=users,dc=example,dc=com" # The group name of the users group, if the user is in this group, the user will be an login. 
